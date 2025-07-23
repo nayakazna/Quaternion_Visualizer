@@ -1,0 +1,1 @@
+Sebagian besar test case yang tersedia dicomot dari [https://github.com/McNopper/OpenGL/blob/master/Binaries](https:/c:\Users\nayak\Downloads\utah_teapot.obj/github.com/McNopper/OpenGL/blob/master/Binaries).
