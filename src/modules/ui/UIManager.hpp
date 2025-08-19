@@ -80,6 +80,7 @@ namespace ui {
         std::shared_ptr<Panel> mainPanel;
         std::shared_ptr<Panel> filePanel;
         std::shared_ptr<Panel> rotationPanel;
+        std::shared_ptr<Panel> infoPanel;
         
         std::shared_ptr<Button> chooseFileButton;
         std::shared_ptr<Label> fileNameLabel;
@@ -108,6 +109,8 @@ namespace ui {
         
         void normalizeAxis();
         void updateQuaternionDisplay();
+
+        void createInfoSection();
     };
     
 } 

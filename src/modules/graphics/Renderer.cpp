@@ -7,7 +7,7 @@ namespace graphics {
     Renderer<T>::Renderer(SDL_Renderer* renderer, int screenWidth, int screenHeight) :
         renderer(renderer), screenWidth(screenWidth), screenHeight(screenHeight) {
         
-        labelFont = TTF_OpenFont("assets/fonts/Miracode.ttf", 16);
+        labelFont = TTF_OpenFont("../assets/fonts/Miracode.ttf", 16);
         if (!labelFont) {
             std::cerr << "Warning: gagal memuat font " << std::endl;
         }
@@ -298,32 +298,61 @@ namespace graphics {
         }
     }
 
-    
     template<typename T>
     void Renderer<T>::drawText3D(const std::string& text, const math::Vector3<T>& worldPos, 
                                 const math::Matrix4<T>& mvpMatrix, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
-        if (!labelFont) return;
+        if (!labelFont) {
+            
+            static bool warningPrinted = false;
+            if (!warningPrinted) {
+                std::cerr << "Label font not loaded, text rendering disabled" << std::endl;
+                warningPrinted = true;
+            }
+            return;
+        }
         
         math::Vector3<T> screenPos = project(worldPos, mvpMatrix);
-        if (isValidScreenPoint(screenPos)) {
-            SDL_Color color = {r, g, b, a};
-            SDL_Surface* surface = TTF_RenderText_Solid(labelFont, text.c_str(), color);
-            if (surface) {
-                SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-                if (texture) {
-                    SDL_Rect destRect = {
-                        static_cast<int>(screenPos.x), 
-                        static_cast<int>(screenPos.y), 
-                        surface->w, 
-                        surface->h
-                    };
-                    SDL_RenderCopy(renderer, texture, nullptr, &destRect);
-                    SDL_DestroyTexture(texture);
-                }
-                SDL_FreeSurface(surface);
-            }
+        
+        
+        if (!isValidScreenPoint(screenPos)) {
+            return; 
+        }
+        
+        SDL_Color color = {r, g, b, a};
+        SDL_Surface* surface = TTF_RenderText_Solid(labelFont, text.c_str(), color);
+        if (!surface) {
+            std::cerr << "Failed to create text surface: " << TTF_GetError() << std::endl;
+            return;
+        }
+        
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        if (!texture) {
+            std::cerr << "Failed to create text texture: " << SDL_GetError() << std::endl;
+            SDL_FreeSurface(surface);
+            return;
+        }
+        
+        
+        SDL_Rect destRect = {
+            static_cast<int>(screenPos.x) + 5,  
+            static_cast<int>(screenPos.y) - 10, 
+            surface->w, 
+            surface->h
+        };
+        
+        SDL_RenderCopy(renderer, texture, nullptr, &destRect);
+        SDL_DestroyTexture(texture);
+        SDL_FreeSurface(surface);
+        
+        
+        static int renderCount = 0;
+        if (renderCount < 5) {
+            std::cout << "Rendered text '" << text << "' at screen pos (" 
+                    << screenPos.x << ", " << screenPos.y << ")" << std::endl;
+            renderCount++;
         }
     }
+
     template class Renderer<float>;
     template class Renderer<double>;
 

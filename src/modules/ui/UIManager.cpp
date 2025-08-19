@@ -161,7 +161,7 @@ namespace ui {
     
     void UIManager::createMainLayout() {
         
-        int panelWidth = 300;
+        int panelWidth = 400;
         int panelX = screenWidth - panelWidth - 10;
         int panelY = 10;
         int panelHeight = screenHeight - 20;
@@ -172,6 +172,7 @@ namespace ui {
         createFileSection();
         createRotationSection();
         createControlButtons();
+        createInfoSection();
         
         
         statusLabel = createLabel(Rect(panelX + 10, panelY + panelHeight - 30, panelWidth - 20, 20), 
@@ -268,7 +269,7 @@ namespace ui {
     void UIManager::createControlButtons() {
         Rect contentArea = mainPanel->getContentArea();
         
-        int buttonY = contentArea.y + 300;
+        int buttonY = contentArea.y + 310;
         int buttonWidth = (contentArea.w - 10) / 2;
         
         
@@ -390,4 +391,105 @@ namespace ui {
         }
     }
     
+    void UIManager::createInfoSection() {
+        Rect contentArea = mainPanel->getContentArea();
+        
+        
+        infoPanel = createPanel(
+            Rect(contentArea.x, contentArea.y + 350, contentArea.w, 310), 
+            "Info"
+        );
+        mainPanel->addChild(infoPanel);
+        
+        Rect infoContentArea = infoPanel->getContentArea();
+        int currentY = infoContentArea.y;
+        int lineHeight = 18;
+        int sectionSpacing = 8;
+        
+        
+        auto controlsTitle = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                        "Kontrol Kamera:");
+        controlsTitle->setTextColor(Color(200, 200, 100, 255)); 
+        infoPanel->addChild(controlsTitle);
+        currentY += lineHeight + 3;
+        
+        auto wasdLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "WASD - Gerakin kamera");
+        wasdLabel->setTextColor(Color(180, 180, 180, 255));
+        infoPanel->addChild(wasdLabel);
+        currentY += lineHeight;
+        
+        auto qeLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                "Q/E - Atas/Bawah");
+        qeLabel->setTextColor(Color(180, 180, 180, 255));
+        infoPanel->addChild(qeLabel);
+        currentY += lineHeight;
+        
+        auto zcLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                "Z/C - Rotasi yaw");
+        zcLabel->setTextColor(Color(180, 180, 180, 255));
+        infoPanel->addChild(zcLabel);
+        currentY += lineHeight;
+        
+        auto xvLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                "X/V - Rotasi pitch");
+        xvLabel->setTextColor(Color(180, 180, 180, 255));
+        infoPanel->addChild(xvLabel);
+        currentY += lineHeight;
+        
+        auto escLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                "ESC - Nyala/matiin kontrol mouse");
+        escLabel->setTextColor(Color(180, 180, 180, 255));
+        infoPanel->addChild(escLabel);
+        currentY += lineHeight + sectionSpacing;
+        
+        
+        auto colorsTitle = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Panduan warna:");
+        colorsTitle->setTextColor(Color(200, 200, 100, 255)); 
+        infoPanel->addChild(colorsTitle);
+        currentY += lineHeight + 3;
+        
+        auto greenLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Abu-abu - sebelum rotasi");
+        greenLabel->setTextColor(Color(100, 100, 100, 255)); 
+        infoPanel->addChild(greenLabel);
+        currentY += lineHeight;
+
+        auto whiteLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Putih - setelah rotasi");
+        whiteLabel->setTextColor(Color(255, 255, 255, 255)); 
+        infoPanel->addChild(whiteLabel);
+        currentY += lineHeight;
+        
+        auto redLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                "Ungu - Sumbu rotasi");
+        redLabel->setTextColor(Color(128, 0, 128, 255)); 
+        infoPanel->addChild(redLabel);
+        currentY += lineHeight + sectionSpacing;
+        
+        
+        auto axesTitle = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Sumbu Koordinat:");
+        axesTitle->setTextColor(Color(200, 200, 100, 255)); 
+        infoPanel->addChild(axesTitle);
+        currentY += lineHeight + 3;
+        
+        auto xAxisLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Merah - Sumbu-x");
+        xAxisLabel->setTextColor(Color(255, 100, 100, 255)); 
+        infoPanel->addChild(xAxisLabel);
+        currentY += lineHeight;
+        
+        auto yAxisLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Hijau - Sumbu-y");
+        yAxisLabel->setTextColor(Color(100, 255, 100, 255)); 
+        infoPanel->addChild(yAxisLabel);
+        currentY += lineHeight;
+        
+        auto zAxisLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Biru - Sumbu-z");
+        zAxisLabel->setTextColor(Color(100, 150, 255, 255)); 
+        infoPanel->addChild(zAxisLabel);
+    }
 } // namespace

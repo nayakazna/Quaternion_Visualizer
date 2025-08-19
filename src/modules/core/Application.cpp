@@ -31,7 +31,7 @@ namespace app {
             exit(1);
         }
         
-        mainWindow = new Window("Quaternion Visualizer", 1280, 720);
+        mainWindow = new Window("Quaternion Visualizer", 1366, 768);
         mainRenderer = new graphics::Renderer<float>(mainWindow->getSDLRenderer(), mainWindow->getWidth(), mainWindow->getHeight());
         mainCamera = new graphics::Camera<float>(
             Vector3f(0.0f, 0.0f, 5.0f),
@@ -126,14 +126,13 @@ namespace app {
     void Application::drawRotationAxis(const Matrix4f& viewProjectionMatrix) {
         float x, y, z;
         uiManager->getRotationAxis(x, y, z);
+
+        Vector3f axisEnd(x * 2.5f, y * 2.5f, z * 2.5f); 
+        mainRenderer->drawArrow(Vector3f(0, 0, 0), axisEnd, viewProjectionMatrix, 128, 0, 128, 255);
         
-        // 🔴 Draw rotation axis as red arrow
-        Vector3f axisEnd(x * 2.5f, y * 2.5f, z * 2.5f); // Longer than coordinate axes
-        mainRenderer->drawArrow(Vector3f(0, 0, 0), axisEnd, viewProjectionMatrix, 255, 0, 0, 255);
         
-        // 🏷️ Label the rotation axis
-        mainRenderer->drawText3D("Rotation Axis", axisEnd + Vector3f(0.2f, 0.2f, 0.2f), 
-                                viewProjectionMatrix, 255, 200, 200, 255);
+        mainRenderer->drawText3D("Sumbu Rotasi", axisEnd + Vector3f(0.2f, 0.2f, 0.2f), 
+                                viewProjectionMatrix, 255, 128, 255, 255);
     }
 
     void Application::drawAngleLabel(const Matrix4f& viewProjectionMatrix) {
@@ -141,11 +140,11 @@ namespace app {
         float x, y, z;
         uiManager->getRotationAxis(x, y, z);
         
-        // 📐 Position label near the rotation axis
+        
         Vector3f labelPos(x * 1.5f, y * 1.5f + 0.5f, z * 1.5f);
         
         std::ostringstream oss;
-        oss << std::fixed << std::setprecision(1) << angle << "°";
+        oss << std::fixed << std::setprecision(1) << angle << " derajat";
         
         mainRenderer->drawText3D(oss.str(), labelPos, viewProjectionMatrix, 255, 255, 100, 255);
     }
@@ -168,12 +167,12 @@ namespace app {
 
         if (!mesh.vertices.empty()) {
             if (hasRotation) {
-                mainRenderer->drawMesh(mesh, originalModelMatrix, viewMatrix, projectionMatrix, 100, 100, 255, 255);
+                mainRenderer->drawMesh(mesh, originalModelMatrix, viewMatrix, projectionMatrix, 100, 100, 100, 255);
                 mainRenderer->drawMesh(mesh, rotatedModelMatrix, viewMatrix, projectionMatrix, 255, 255, 255, 255);
                 drawRotationAxis(viewProjectionMatrix);
                 drawAngleLabel(viewProjectionMatrix);
             } else {
-                mainRenderer->drawMesh(mesh, originalModelMatrix, viewMatrix, projectionMatrix, 0, 255, 0, 255);
+                mainRenderer->drawMesh(mesh, originalModelMatrix, viewMatrix, projectionMatrix, 100, 100, 100, 255);
             }
         }
         uiManager->render();
