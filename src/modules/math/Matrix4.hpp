@@ -347,21 +347,25 @@ namespace math {
         Vector3<T> u = s.cross(f);
 
         Matrix4 result;
+        // 🚀 FIXED: Standard OpenGL lookAt matrix layout
         result(0, 0) = s.x;
         result(0, 1) = s.y;
         result(0, 2) = s.z;
-        result(0, 3) = static_cast<T>(0);
+        result(0, 3) = -s.dot(eye);  // 🔥 Translation di column 3!
+        
         result(1, 0) = u.x;
         result(1, 1) = u.y;
         result(1, 2) = u.z;
-        result(1, 3) = static_cast<T>(0);
+        result(1, 3) = -u.dot(eye);  // 🔥 Translation di column 3!
+        
         result(2, 0) = -f.x;
         result(2, 1) = -f.y;
         result(2, 2) = -f.z;
-        result(2, 3) = static_cast<T>(0);
-        result(3, 0) = -s.dot(eye);
-        result(3, 1) = -u.dot(eye);
-        result(3, 2) = f.dot(eye);
+        result(2, 3) = f.dot(eye);   // 🔥 Translation di column 3!
+        
+        result(3, 0) = static_cast<T>(0);
+        result(3, 1) = static_cast<T>(0);
+        result(3, 2) = static_cast<T>(0);
         result(3, 3) = static_cast<T>(1);
         return result;
     }

@@ -4,7 +4,7 @@
 namespace graphics {
     template<typename T>
     Camera<T>::Camera(const math::Vector3<T>& pos, const math::Vector3<T>& target, const math::Vector3<T>& up) :
-        position(pos), worldUp(up.normalize()), front(0.0f, 0.0f, -1.0f), yaw(-90.0f), pitch(0.0f), movementSpeed(125.5f), mouseSensitivity(0.5f) {
+        position(pos), worldUp(up.normalize()), front(0.0f, 0.0f, -1.0f), yaw(-90.0f), pitch(0.0f), movementSpeed(5.0f), mouseSensitivity(0.05f) {
         updateVectors();
     }
     
