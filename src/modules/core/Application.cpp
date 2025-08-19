@@ -106,15 +106,12 @@ namespace app {
 
         mainRenderer->drawAxes(viewProjectionMatrix);
 
-        Matrix4f modelMatrixOriginal = Matrix4f::identity();
-        mainRenderer->drawMesh(mesh, modelMatrixOriginal, viewMatrix, projectionMatrix, 0, 255, 0, 255);
-
         Vector3f rotationAxis(0.0f, 1.0f, 0.0f);
         float rotationAngleRad = rotationAngle * (3.141592653589793f / 180.0f);
         Quaternionf rotation = Quaternionf::fromAxisAngle(rotationAxis, rotationAngleRad);
 
-        Matrix4f modelMatrixRotated = Matrix4f::fromQuaternion(rotation);
-        mainRenderer->drawMesh(mesh, modelMatrixRotated, viewMatrix, projectionMatrix, 255, 255, 255, 255);
+        Matrix4f modelMatrix = Matrix4f::fromQuaternion(rotation);
+        mainRenderer->drawMesh(mesh, modelMatrix, viewMatrix, projectionMatrix, 255, 255, 255, 255);
 
         mainRenderer->present();
     }

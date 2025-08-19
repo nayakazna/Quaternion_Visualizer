@@ -26,6 +26,7 @@ add_executable(quaternion_visualizer
     src/modules/graphics/Camera.cpp
     src/modules/graphics/Renderer.cpp
     src/modules/graphics/ObjLoader.cpp
+    src/modules/ui/UIManager.cpp
 )
 
 target_link_libraries(quaternion_visualizer
