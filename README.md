@@ -132,6 +132,10 @@ $$
 Kuaternion banyak digunakan untuk grafika komputer dan game 3-dimensi, robotika, serta masih banyak lagi. Hal paling bermanfaat dari kuaternion adalah rotasinya. Rotasi Euler bisa mengalami gimbal lock (ketika dua sumbu rotasi berimpitan), sementara kuaternion tidak.
 
 # Screenshot Hasil Percobaan
+![Screenshot](assets/screenshots/ss1.png)
+![Screenshot](assets/screenshots/ss2.png)
+![Screenshot](assets/screenshots/ss3.png)
+![Screenshot](assets/screenshots/ss4.png)
 
 # Cara Menjalankan Program
 ## Prasyarat
