@@ -40,7 +40,7 @@ namespace app {
         );
         
         // TODO: ini nanti diganti, di app-nya ada buat choose file
-        mesh = graphics::ObjLoader<float>::loadObj("models/teapot.obj");
+        mesh = graphics::ObjLoader<float>::loadObj("models/elephant.obj");
     }
 
     Application::~Application() {
@@ -91,9 +91,20 @@ namespace app {
         }
     }
 
+    
     void Application::update(float deltaTime) {
         const Uint8* state = SDL_GetKeyboardState(NULL);
         mainCamera->handleKeyboard(state, deltaTime);
+            // 🔍 DEBUG: Log camera state
+            static int frameCount = 0;
+            if (frameCount % 60 == 0) { // Log every 60 frames
+                std::cout << "Frame: " << frameCount << std::endl;
+                auto pos = mainCamera->getPosition();
+                auto front = mainCamera->getFront();
+                std::cout << "Pos: (" << pos.x << "," << pos.y << "," << pos.z << ")" << std::endl;
+                std::cout << "Front: (" << front.x << "," << front.y << "," << front.z << ")" << std::endl;
+            }
+        frameCount++;
     }
 
     void Application::render() {

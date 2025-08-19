@@ -20,6 +20,14 @@ namespace graphics {
         
     private:
         bool isValidScreenPoint(const math::Vector3<T>& screenPoint) const;
+        
+        // 🚀 NEW: Line clipping functions
+        bool clipLine(math::Vector3<T>& p1, math::Vector3<T>& p2) const;
+        int computeOutCode(const math::Vector3<T>& point) const;
+        bool clipToNearPlane(const math::Vector3<T>& worldP1, const math::Vector3<T>& worldP2, 
+                        const math::Matrix4<T>& viewMatrix, const math::Matrix4<T>& modelMatrix,
+                        math::Vector3<T>& clippedP1, math::Vector3<T>& clippedP2) const;
+        
         SDL_Renderer* renderer;
         int screenWidth;
         int screenHeight;

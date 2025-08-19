@@ -14,6 +14,11 @@ namespace graphics {
         void handleMouseMovement(T xoffset, T yoffset);
         void handleKeyboard(const Uint8* state, T deltaTime);
 
+        math::Vector3<T> getPosition() const { return position; }
+        math::Vector3<T> getFront() const { return front; }
+        math::Vector3<T> getRight() const { return right; }
+        math::Vector3<T> getUp() const { return up; }
+
         math::Matrix4<T> getViewMatrix() const;
         math::Matrix4<T> getProjectionMatrix(int screenWidth, int screenHeight) const;
 

@@ -4,7 +4,7 @@
 namespace graphics {
     template<typename T>
     Camera<T>::Camera(const math::Vector3<T>& pos, const math::Vector3<T>& target, const math::Vector3<T>& up) :
-        position(pos), worldUp(up.normalize()), front(0.0f, 0.0f, -1.0f), yaw(-90.0f), pitch(0.0f), movementSpeed(20.5f), mouseSensitivity(0.1f) {
+        position(pos), worldUp(up.normalize()), front(0.0f, 0.0f, -1.0f), yaw(-90.0f), pitch(0.0f), movementSpeed(125.5f), mouseSensitivity(0.5f) {
         updateVectors();
     }
     
@@ -63,7 +63,7 @@ namespace graphics {
         T fovY = static_cast<T>(45.0) * static_cast<T>(3.141592653589793) / static_cast<T>(180.0);
         T aspect = static_cast<T>(screenWidth) / static_cast<T>(screenHeight);
         T nearZ = static_cast<T>(0.1);
-        T farZ = static_cast<T>(100.0);
+        T farZ = static_cast<T>(20.0);
         return math::Matrix4<T>::perspective(fovY, aspect, nearZ, farZ);
     }
 

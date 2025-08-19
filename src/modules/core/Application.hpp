@@ -25,6 +25,8 @@ namespace app {
         graphics::Camera<float>* mainCamera;
         graphics::Mesh<float> mesh;
         bool quit;
+        bool mouseCapture = false;
         float rotationAngle;
+
     };
 } // namespace app
