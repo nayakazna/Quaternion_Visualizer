@@ -5,7 +5,20 @@
 namespace graphics {
     template<typename T>
     Renderer<T>::Renderer(SDL_Renderer* renderer, int screenWidth, int screenHeight) :
-        renderer(renderer), screenWidth(screenWidth), screenHeight(screenHeight) {}
+        renderer(renderer), screenWidth(screenWidth), screenHeight(screenHeight) {
+        
+        labelFont = TTF_OpenFont("assets/fonts/Miracode.ttf", 16);
+        if (!labelFont) {
+            std::cerr << "Warning: gagal memuat font " << std::endl;
+        }
+    }
+
+    template<typename T>
+    Renderer<T>::~Renderer() {
+        if (labelFont) {
+            TTF_CloseFont(labelFont);
+        }
+    }
 
     template<typename T>
     void Renderer<T>::clearScreen(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
@@ -188,7 +201,7 @@ namespace graphics {
                 math::Vector3<T> p1 = mesh.vertices[idx1];
                 math::Vector3<T> p2 = mesh.vertices[idx2];
                 
-                // near-plane clipping
+                
                 math::Vector3<T> clippedWorldP1, clippedWorldP2;
                 if (!clipToNearPlane(p1, p2, viewMatrix, modelMatrix, clippedWorldP1, clippedWorldP2)) {
                     continue;
@@ -197,13 +210,13 @@ namespace graphics {
                 math::Vector3<T> sp1 = project(clippedWorldP1, mvpMatrix);
                 math::Vector3<T> sp2 = project(clippedWorldP2, mvpMatrix);
 
-                // screen-space clipping
+                
                 if (clipLine(sp1, sp2)) {
                     SDL_RenderDrawLine(renderer, 
                         static_cast<int>(sp1.x), static_cast<int>(sp1.y),
                         static_cast<int>(sp2.x), static_cast<int>(sp2.y));
                 }
-                
+
                 points.push_back({static_cast<int>(sp1.x), static_cast<int>(sp1.y)});
                 points.push_back({static_cast<int>(sp2.x), static_cast<int>(sp2.y)});
             }
@@ -213,15 +226,105 @@ namespace graphics {
 
     template<typename T>
     void Renderer<T>::drawAxes(const math::Matrix4<T>& viewProjectionMatrix) {
-        // x - merah
+        
         drawLine(math::Vector3<T>(0, 0, 0), math::Vector3<T>(200, 0, 0), viewProjectionMatrix, 255, 0, 0, 255);
-        // y - ijo
+        
         drawLine(math::Vector3<T>(0, 0, 0), math::Vector3<T>(0, 200, 0), viewProjectionMatrix, 0, 255, 0, 255);
-        // z - biru
+        
         drawLine(math::Vector3<T>(0, 0, 0), math::Vector3<T>(0, 0, 200), viewProjectionMatrix, 0, 0, 255, 255);
     }
     
+    template<typename T>
+    void Renderer<T>::drawAxesWithLabels(const math::Matrix4<T>& viewProjectionMatrix) {
+        T axisLength = static_cast<T>(2.0);
+        
+        drawArrow(math::Vector3<T>(0, 0, 0), math::Vector3<T>(axisLength, 0, 0), 
+                viewProjectionMatrix, 255, 0, 0, 255);
+        drawText3D("X", math::Vector3<T>(axisLength + 0.2f, 0, 0), 
+                viewProjectionMatrix, 255, 100, 100, 255);
+        
+        drawArrow(math::Vector3<T>(0, 0, 0), math::Vector3<T>(0, axisLength, 0), 
+                viewProjectionMatrix, 0, 255, 0, 255);
+        drawText3D("Y", math::Vector3<T>(0, axisLength + 0.2f, 0), 
+                viewProjectionMatrix, 100, 255, 100, 255);
+        
+        drawArrow(math::Vector3<T>(0, 0, 0), math::Vector3<T>(0, 0, axisLength), 
+                viewProjectionMatrix, 0, 0, 255, 255);
+        drawText3D("Z", math::Vector3<T>(0, 0, axisLength + 0.2f), 
+                viewProjectionMatrix, 100, 100, 255, 255);
+    }
+
+    template<typename T>
+    void Renderer<T>::drawArrow(const math::Vector3<T>& start, const math::Vector3<T>& end, 
+                            const math::Matrix4<T>& mvpMatrix, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+        
+        drawLine(start, end, mvpMatrix, r, g, b, a);
+        
+        
+        math::Vector3<T> direction = (end - start);
+        T length = std::sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
+        if (length > 0.001f) {
+            direction.x /= length; direction.y /= length; direction.z /= length;
+            
+            T arrowSize = length * static_cast<T>(0.1); 
+            
+            
+            math::Vector3<T> perpendicular1, perpendicular2;
+            if (std::abs(direction.x) < 0.9f) {
+                perpendicular1 = math::Vector3<T>(0, direction.z, -direction.y);
+            } else {
+                perpendicular1 = math::Vector3<T>(-direction.z, 0, direction.x);
+            }
+            perpendicular2 = direction.cross(perpendicular1);
+            
+            
+            T len1 = std::sqrt(perpendicular1.x*perpendicular1.x + perpendicular1.y*perpendicular1.y + perpendicular1.z*perpendicular1.z);
+            T len2 = std::sqrt(perpendicular2.x*perpendicular2.x + perpendicular2.y*perpendicular2.y + perpendicular2.z*perpendicular2.z);
+            if (len1 > 0.001f) { perpendicular1.x /= len1; perpendicular1.y /= len1; perpendicular1.z /= len1; }
+            if (len2 > 0.001f) { perpendicular2.x /= len2; perpendicular2.y /= len2; perpendicular2.z /= len2; }
+            
+            
+            math::Vector3<T> headBase = end - direction * arrowSize;
+            math::Vector3<T> head1 = headBase + perpendicular1 * arrowSize * static_cast<T>(0.5);
+            math::Vector3<T> head2 = headBase - perpendicular1 * arrowSize * static_cast<T>(0.5);
+            math::Vector3<T> head3 = headBase + perpendicular2 * arrowSize * static_cast<T>(0.5);
+            math::Vector3<T> head4 = headBase - perpendicular2 * arrowSize * static_cast<T>(0.5);
+            
+            
+            drawLine(end, head1, mvpMatrix, r, g, b, a);
+            drawLine(end, head2, mvpMatrix, r, g, b, a);
+            drawLine(end, head3, mvpMatrix, r, g, b, a);
+            drawLine(end, head4, mvpMatrix, r, g, b, a);
+        }
+    }
+
+    
+    template<typename T>
+    void Renderer<T>::drawText3D(const std::string& text, const math::Vector3<T>& worldPos, 
+                                const math::Matrix4<T>& mvpMatrix, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+        if (!labelFont) return;
+        
+        math::Vector3<T> screenPos = project(worldPos, mvpMatrix);
+        if (isValidScreenPoint(screenPos)) {
+            SDL_Color color = {r, g, b, a};
+            SDL_Surface* surface = TTF_RenderText_Solid(labelFont, text.c_str(), color);
+            if (surface) {
+                SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+                if (texture) {
+                    SDL_Rect destRect = {
+                        static_cast<int>(screenPos.x), 
+                        static_cast<int>(screenPos.y), 
+                        surface->w, 
+                        surface->h
+                    };
+                    SDL_RenderCopy(renderer, texture, nullptr, &destRect);
+                    SDL_DestroyTexture(texture);
+                }
+                SDL_FreeSurface(surface);
+            }
+        }
+    }
     template class Renderer<float>;
     template class Renderer<double>;
 
-} // namespace graphics
+} 

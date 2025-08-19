@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include "../math/Matrix4.hpp"
 #include "../math/Vector2.hpp"
 #include "../math/Vector3.hpp"
@@ -10,17 +11,23 @@ namespace graphics {
     class Renderer {
     public:
         Renderer(SDL_Renderer* renderer, int screenWidth, int screenHeight);
-        
+        ~Renderer();
+
         void clearScreen(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
         void present();
         math::Vector3<T> project(const math::Vector3<T>& worldPoint, const math::Matrix4<T>& mvpMatrix) const;
         void drawLine(const math::Vector3<T>& p1, const math::Vector3<T>& p2, const math::Matrix4<T>& mvpMatrix, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
         void drawMesh(const graphics::Mesh<T>& mesh, const math::Matrix4<T>& modelMatrix, const math::Matrix4<T>& viewMatrix, const math::Matrix4<T>& projectionMatrix, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
         void drawAxes(const math::Matrix4<T>& viewProjectionMatrix);
-        
+
+        void drawAxesWithLabels(const math::Matrix4<T>& viewProjectionMatrix);
+        void drawArrow(const math::Vector3<T>& start, const math::Vector3<T>& end, 
+                    const math::Matrix4<T>& mvpMatrix, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+        void drawText3D(const std::string& text, const math::Vector3<T>& worldPos, 
+                        const math::Matrix4<T>& mvpMatrix, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
     private:
         bool isValidScreenPoint(const math::Vector3<T>& screenPoint) const;
-        
         bool clipLine(math::Vector3<T>& p1, math::Vector3<T>& p2) const;
         int computeOutCode(const math::Vector3<T>& point) const;
         bool clipToNearPlane(const math::Vector3<T>& worldP1, const math::Vector3<T>& worldP2, 
@@ -30,5 +37,6 @@ namespace graphics {
         SDL_Renderer* renderer;
         int screenWidth;
         int screenHeight;
+        TTF_Font* labelFont;
     };
 } // namespace graphics

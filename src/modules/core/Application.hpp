@@ -7,6 +7,9 @@
 #include "../math/Vector3.hpp"    
 #include "../math/Matrix4.hpp" 
 #include "../ui/UIManager.hpp"
+#include <memory>                        
+#include <sstream>                       
+#include <iomanip>                       
 
 namespace app {
     class Application {
@@ -16,20 +19,23 @@ namespace app {
         void run();
 
     private:
+        Window* mainWindow;
+        graphics::Renderer<float>* mainRenderer;
+        graphics::Camera<float>* mainCamera;
+        graphics::Mesh<float> mesh;
+
+        std::unique_ptr<ui::UIManager> uiManager;
+
         void handleEvents();
         void handleKeyboard(const Uint8* state, float deltaTime);
         void update(float deltaTime);
         void render();
 
-        Window* mainWindow;
-        graphics::Renderer<float>* mainRenderer;
-        graphics::Camera<float>* mainCamera;
-        graphics::Mesh<float> mesh;
         bool quit;
-        bool mouseCapture = false;
         float rotationAngle;
+        bool mouseCapture = false;
+        bool mouseControlEnabled = true;
 
-        std::unique_ptr<ui::UIManager> uiManager;
         
         math::Matrix4<float> originalModelMatrix;
         math::Matrix4<float> rotatedModelMatrix;
@@ -38,5 +44,8 @@ namespace app {
         void onFileSelected(const std::string& filename);
         void onApplyRotation();
         void onResetRotation();
+
+        void drawRotationAxis(const math::Matrix4<float>& viewProjectionMatrix);
+        void drawAngleLabel(const math::Matrix4<float>& viewProjectionMatrix);
     };
 } // namespace app
