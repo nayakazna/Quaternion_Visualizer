@@ -5,6 +5,7 @@
 #include "Label.hpp"
 #include "Panel.hpp"
 #include "FileDialog.hpp"
+#include "RadioButton.hpp"
 #include <SDL_ttf.h>
 #include <vector>
 #include <memory>
@@ -12,6 +13,11 @@
 #include <functional>
 
 namespace ui {
+    enum class RotationMethod {
+        QUATERNION = 0,
+        EULER_ANGLES = 1,
+        TAIT_BRYAN = 2
+    };
     
     struct UITheme {
         Color backgroundColor = Color(30, 30, 30, 255);
@@ -61,7 +67,15 @@ namespace ui {
         void getRotationAxis(float& x, float& y, float& z) const;
         void setRotationAngle(float angle);
         void setRotationAxis(float x, float y, float z);
+
+        RotationMethod getRotationMethod() const;
+        void setRotationMethod(RotationMethod method);
         
+        void getEulerAngles(float& alpha, float& beta, float& gamma) const;
+        void setEulerAngles(float alpha, float beta, float gamma);
+        
+        void getTaitBryanAngles(float& yaw, float& pitch, float& roll) const;
+        void setTaitBryanAngles(float yaw, float pitch, float roll);
         
         std::function<void(const std::string&)> onFileSelected;
         std::function<void()> onApplyRotation;
@@ -100,6 +114,7 @@ namespace ui {
         void createMainLayout();
         void createFileSection();
         void createRotationSection();
+        void createInfoSection();
         void createControlButtons();
         
         void onChooseFileClicked();
@@ -110,7 +125,27 @@ namespace ui {
         void normalizeAxis();
         void updateQuaternionDisplay();
 
-        void createInfoSection();
+        
+        RotationMethod currentMethod = RotationMethod::QUATERNION;
+        std::shared_ptr<RadioButton> methodSelector;
+        
+        
+        std::shared_ptr<Panel> eulerPanel;
+        std::shared_ptr<InputField> alphaInput;  
+        std::shared_ptr<InputField> betaInput;   
+        std::shared_ptr<InputField> gammaInput;  
+        
+        
+        std::shared_ptr<Panel> taitBryanPanel;
+        std::shared_ptr<InputField> yawInput;
+        std::shared_ptr<InputField> pitchInput;
+        std::shared_ptr<InputField> rollInput;
+        
+        void createMethodSelection();
+        void createEulerSection();
+        void createTaitBryanSection();
+        void onMethodChanged(int methodIndex);
+        void updateVisiblePanels();
     };
     
 } 

@@ -344,13 +344,7 @@ namespace graphics {
         SDL_DestroyTexture(texture);
         SDL_FreeSurface(surface);
         
-        
-        static int renderCount = 0;
-        if (renderCount < 5) {
-            std::cout << "Rendered text '" << text << "' at screen pos (" 
-                    << screenPos.x << ", " << screenPos.y << ")" << std::endl;
-            renderCount++;
-        }
+
     }
 
     template class Renderer<float>;

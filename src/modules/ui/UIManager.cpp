@@ -161,7 +161,7 @@ namespace ui {
     
     void UIManager::createMainLayout() {
         
-        int panelWidth = 400;
+        int panelWidth = 510;
         int panelX = screenWidth - panelWidth - 10;
         int panelY = 10;
         int panelHeight = screenHeight - 20;
@@ -170,21 +170,47 @@ namespace ui {
         addComponent(mainPanel);
         
         createFileSection();
+        createMethodSelection();
         createRotationSection();
+        createEulerSection();
+        createTaitBryanSection();
         createControlButtons();
         createInfoSection();
         
+        updateVisiblePanels();
         
         statusLabel = createLabel(Rect(panelX + 10, panelY + panelHeight - 30, panelWidth - 20, 20), 
                                  "Ready");
         statusLabel->setTextColor(Color(150, 150, 150, 255));
         addComponent(statusLabel);
     }
+
+    void UIManager::updateVisiblePanels() {
+        rotationPanel->setVisible(currentMethod == RotationMethod::QUATERNION);
+        eulerPanel->setVisible(currentMethod == RotationMethod::EULER_ANGLES);
+        taitBryanPanel->setVisible(currentMethod == RotationMethod::TAIT_BRYAN);
+    }
+
+    RotationMethod UIManager::getRotationMethod() const {
+        return currentMethod;
+    }
+
+    void UIManager::getEulerAngles(float& alpha, float& beta, float& gamma) const {
+        alpha = alphaInput ? alphaInput->getFloatValue() : 0.0f;
+        beta = betaInput ? betaInput->getFloatValue() : 0.0f;
+        gamma = gammaInput ? gammaInput->getFloatValue() : 0.0f;
+    }
+
+    void UIManager::getTaitBryanAngles(float& yaw, float& pitch, float& roll) const {
+        yaw = yawInput ? yawInput->getFloatValue() : 0.0f;
+        pitch = pitchInput ? pitchInput->getFloatValue() : 0.0f;
+        roll = rollInput ? rollInput->getFloatValue() : 0.0f;
+    }
     
     void UIManager::createFileSection() {
         Rect contentArea = mainPanel->getContentArea();
         
-        
+
         filePanel = createPanel(Rect(contentArea.x, contentArea.y, contentArea.w, 80), "File Operations");
         mainPanel->addChild(filePanel);
         
@@ -212,8 +238,8 @@ namespace ui {
         
         
         rotationPanel = createPanel(
-            Rect(contentArea.x, contentArea.y + 90, contentArea.w, 200), 
-            "Rotation Parameters"
+            Rect(contentArea.x, contentArea.y + 220, contentArea.w, 200), 
+            "Parameter Rotasi"
         );
         mainPanel->addChild(rotationPanel);
         
@@ -222,7 +248,7 @@ namespace ui {
         
         
         auto axisLabel = createLabel(Rect(rotContentArea.x, rotContentArea.y, rotContentArea.w, 20), 
-                                    "Rotation Axis (Unit Vector):");
+                                    "Sumbu Rotasi (Vektor Satuan):");
         rotationPanel->addChild(axisLabel);
         
         
@@ -248,7 +274,7 @@ namespace ui {
         
         
         auto angleLabel = createLabel(Rect(rotContentArea.x, rotContentArea.y + 60, rotContentArea.w, 20), 
-                                     "Rotation Angle (degrees):");
+                                     "Sudut Rotasi (degrees):");
         rotationPanel->addChild(angleLabel);
         
         angleInput = createInputField(Rect(rotContentArea.x, rotContentArea.y + 85, rotContentArea.w, 25), "45.0");
@@ -265,17 +291,143 @@ namespace ui {
         quaternionDisplay->setTextColor(Color(100, 200, 100, 255)); 
         rotationPanel->addChild(quaternionDisplay);
     }
-    
+
+    void UIManager::createMethodSelection() {
+        Rect contentArea = mainPanel->getContentArea();
+        
+        auto methodPanel = createPanel(Rect(contentArea.x, contentArea.y + 90, contentArea.w, 120), 
+                                    "Metode Rotasi");
+        mainPanel->addChild(methodPanel);
+        
+        Rect methodContentArea = methodPanel->getContentArea();
+        
+        std::vector<std::string> methods = {
+            "Quaternion",
+            "Euler Angles",
+            "Tait-Bryan"
+        };
+        
+        methodSelector = std::make_shared<RadioButton>(
+            Rect(methodContentArea.x, methodContentArea.y, methodContentArea.w, 60),
+            methods,
+            0,
+            [this](int index) { onMethodChanged(index); }
+        );
+        
+        methodPanel->addChild(methodSelector);
+    }
+
+    void UIManager::createEulerSection() {
+        Rect contentArea = mainPanel->getContentArea();
+        
+        
+        eulerPanel = createPanel(Rect(contentArea.x, contentArea.y + 220, contentArea.w, 150), 
+                                "Euler Angles (Z-Y-X)");
+        mainPanel->addChild(eulerPanel);
+        
+        Rect eulerContentArea = eulerPanel->getContentArea();
+        int inputWidth = (eulerContentArea.w - 20) / 3;
+        
+        
+        auto alphaLabel = createLabel(Rect(eulerContentArea.x, eulerContentArea.y, eulerContentArea.w, 20), 
+                                    "alpha, beta, gamma:");
+        eulerPanel->addChild(alphaLabel);
+        
+        auto alphaLbl = createLabel(Rect(eulerContentArea.x, eulerContentArea.y + 25, 15, 20), "alpha:");
+        eulerPanel->addChild(alphaLbl);
+        alphaInput = createInputField(Rect(eulerContentArea.x + 20, eulerContentArea.y + 25, inputWidth - 25, 25), "0.0");
+        alphaInput->setText("0.0");
+        eulerPanel->addChild(alphaInput);
+        
+        
+        auto betaLbl = createLabel(Rect(eulerContentArea.x + inputWidth, eulerContentArea.y + 25, 15, 20), "beta:");
+        eulerPanel->addChild(betaLbl);
+        betaInput = createInputField(Rect(eulerContentArea.x + inputWidth + 20, eulerContentArea.y + 25, inputWidth - 25, 25), "0.0");
+        betaInput->setText("45.0");
+        eulerPanel->addChild(betaInput);
+        
+        
+        auto gammaLbl = createLabel(Rect(eulerContentArea.x + inputWidth * 2, eulerContentArea.y + 25, 15, 20), "gamma:");
+        eulerPanel->addChild(gammaLbl);
+        gammaInput = createInputField(Rect(eulerContentArea.x + inputWidth * 2 + 20, eulerContentArea.y + 25, inputWidth - 25, 25), "0.0");
+        gammaInput->setText("0.0");
+        eulerPanel->addChild(gammaInput);
+        
+        
+        auto descLabel = createLabel(Rect(eulerContentArea.x, eulerContentArea.y + 60, eulerContentArea.w, 20), 
+                                    "Urutan rotasi: Z(alpha) -> Y(beta) -> X(gamma)");
+        descLabel->setTextColor(Color(150, 150, 150, 255));
+        eulerPanel->addChild(descLabel);
+    }
+
+    void UIManager::createTaitBryanSection() {
+        Rect contentArea = mainPanel->getContentArea();
+        
+        
+        taitBryanPanel = createPanel(Rect(contentArea.x, contentArea.y + 220, contentArea.w, 150), 
+                                    "Tait-Bryan Angles");
+        mainPanel->addChild(taitBryanPanel);
+        
+        Rect tbContentArea = taitBryanPanel->getContentArea();
+        int inputWidth = (tbContentArea.w - 20) / 3;
+        
+        
+        auto headerLabel = createLabel(Rect(tbContentArea.x, tbContentArea.y, tbContentArea.w, 20), 
+                                    "Yaw (Z), Pitch (Y), Roll (X):");
+        taitBryanPanel->addChild(headerLabel);
+        
+        
+        auto yawLbl = createLabel(Rect(tbContentArea.x, tbContentArea.y + 25, 25, 20), "Yaw:");
+        taitBryanPanel->addChild(yawLbl);
+        yawInput = createInputField(Rect(tbContentArea.x + 30, tbContentArea.y + 25, inputWidth - 35, 25), "0.0");
+        yawInput->setText("0.0");
+        taitBryanPanel->addChild(yawInput);
+        
+        
+        auto pitchLbl = createLabel(Rect(tbContentArea.x + inputWidth, tbContentArea.y + 25, 30, 20), "Pitch:");
+        taitBryanPanel->addChild(pitchLbl);
+        pitchInput = createInputField(Rect(tbContentArea.x + inputWidth + 35, tbContentArea.y + 25, inputWidth - 40, 25), "0.0");
+        pitchInput->setText("45.0");
+        taitBryanPanel->addChild(pitchInput);
+        
+        
+        auto rollLbl = createLabel(Rect(tbContentArea.x + inputWidth * 2, tbContentArea.y + 25, 25, 20), "Roll:");
+        taitBryanPanel->addChild(rollLbl);
+        rollInput = createInputField(Rect(tbContentArea.x + inputWidth * 2 + 30, tbContentArea.y + 25, inputWidth - 35, 25), "0.0");
+        rollInput->setText("0.0");
+        taitBryanPanel->addChild(rollInput);
+        
+        
+        auto descLabel = createLabel(Rect(tbContentArea.x, tbContentArea.y + 60, tbContentArea.w, 20), 
+                                    "Rotasi intrinsik: Z(yaw) -> Y'(pitch) -> X''(roll)");
+        descLabel->setTextColor(Color(150, 150, 150, 255));
+        taitBryanPanel->addChild(descLabel);
+    }
+
+    void UIManager::onMethodChanged(int methodIndex) {
+        currentMethod = static_cast<RotationMethod>(methodIndex);
+        updateVisiblePanels();
+        
+        std::string methodName;
+        switch (currentMethod) {
+            case RotationMethod::QUATERNION: methodName = "Quaternion"; break;
+            case RotationMethod::EULER_ANGLES: methodName = "Euler Angles"; break;
+            case RotationMethod::TAIT_BRYAN: methodName = "Tait-Bryan"; break;
+        }
+        
+        statusLabel->setText("Metode: " + methodName);
+    }
+
     void UIManager::createControlButtons() {
         Rect contentArea = mainPanel->getContentArea();
         
-        int buttonY = contentArea.y + 310;
+        int buttonY = contentArea.y + 425;
         int buttonWidth = (contentArea.w - 10) / 2;
         
         
         applyButton = createButton(
             Rect(contentArea.x, buttonY, buttonWidth, 35),
-            "Apply Rotation",
+            "Apply",
             [this]() { onApplyClicked(); }
         );
         applyButton->setColors(Color(0, 120, 50, 255), Color(0, 140, 60, 255), Color(0, 100, 40, 255)); 
@@ -306,14 +458,14 @@ namespace ui {
         if (onApplyRotation) {
             onApplyRotation();
         }
-        statusLabel->setText("Rotation applied");
+        statusLabel->setText("Rotasi diterapkan");
     }
     
     void UIManager::onResetClicked() {
         if (onResetRotation) {
             onResetRotation();
         }
-        statusLabel->setText("Rotation reset");
+        statusLabel->setText("Rotasi direset");
     }
     
     void UIManager::normalizeAxis() {
@@ -396,7 +548,7 @@ namespace ui {
         
         
         infoPanel = createPanel(
-            Rect(contentArea.x, contentArea.y + 350, contentArea.w, 310), 
+            Rect(contentArea.x, contentArea.y + 500, contentArea.w, 450), 
             "Info"
         );
         mainPanel->addChild(infoPanel);
@@ -460,14 +612,7 @@ namespace ui {
                                     "Putih - setelah rotasi");
         whiteLabel->setTextColor(Color(255, 255, 255, 255)); 
         infoPanel->addChild(whiteLabel);
-        currentY += lineHeight;
-        
-        auto redLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
-                                "Ungu - Sumbu rotasi");
-        redLabel->setTextColor(Color(128, 0, 128, 255)); 
-        infoPanel->addChild(redLabel);
-        currentY += lineHeight + sectionSpacing;
-        
+        currentY += lineHeight + sectionSpacing;;
         
         auto axesTitle = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
                                     "Sumbu Koordinat:");
@@ -491,5 +636,29 @@ namespace ui {
                                     "Biru - Sumbu-z");
         zAxisLabel->setTextColor(Color(100, 150, 255, 255)); 
         infoPanel->addChild(zAxisLabel);
+        currentY += lineHeight;
+
+        auto methodTitle = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Sumbu berdasarkan metode rotasi: ");
+        methodTitle->setTextColor(Color(200, 200, 100, 255));
+        infoPanel->addChild(methodTitle);
+        currentY += lineHeight + 3;
+        
+        auto quatLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Quaternion - Ungu");
+        quatLabel->setTextColor(Color(128, 0, 128, 255));
+        infoPanel->addChild(quatLabel);
+        currentY += lineHeight;
+        
+        auto eulerLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Euler - Ungu(Z), Pink(Y), Orange(X)");
+        eulerLabel->setTextColor(Color(255, 200, 100, 255));
+        infoPanel->addChild(eulerLabel);
+        currentY += lineHeight;
+        
+        auto taitLabel = createLabel(Rect(infoContentArea.x, currentY, infoContentArea.w, lineHeight), 
+                                    "Tait-Bryan - Ungu(Yaw), Pink(Pitch), Orange(Roll)");
+        taitLabel->setTextColor(Color(150, 200, 255, 255));
+        infoPanel->addChild(taitLabel);
     }
 } // namespace

@@ -34,7 +34,7 @@ namespace app {
         bool quit;
         float rotationAngle;
         bool mouseCapture = false;
-        bool mouseControlEnabled = true;
+        bool mouseControlEnabled = false;
 
         
         math::Matrix4<float> originalModelMatrix;

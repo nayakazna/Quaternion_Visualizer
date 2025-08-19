@@ -12,7 +12,6 @@ namespace ui {
             : UIComponent(bounds), text(text), onClick(onClick), 
               isHovered(false), isPressed(false) {
             
-            // 🎨 Default button colors
             normalColor = Color(70, 70, 70, 255);   
             hoverColor = Color(90, 90, 90, 255);     
             pressedColor = Color(50, 50, 50, 255);   
