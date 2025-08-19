@@ -33,6 +33,7 @@ namespace graphics {
         T pitch;
 
         T movementSpeed;
+        T rotationSpeed;
         T mouseSensitivity;
 
         void updateVectors();

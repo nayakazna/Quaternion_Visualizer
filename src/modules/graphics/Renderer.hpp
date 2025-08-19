@@ -21,7 +21,6 @@ namespace graphics {
     private:
         bool isValidScreenPoint(const math::Vector3<T>& screenPoint) const;
         
-        // 🚀 NEW: Line clipping functions
         bool clipLine(math::Vector3<T>& p1, math::Vector3<T>& p2) const;
         int computeOutCode(const math::Vector3<T>& point) const;
         bool clipToNearPlane(const math::Vector3<T>& worldP1, const math::Vector3<T>& worldP2, 

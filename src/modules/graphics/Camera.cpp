@@ -4,7 +4,7 @@
 namespace graphics {
     template<typename T>
     Camera<T>::Camera(const math::Vector3<T>& pos, const math::Vector3<T>& target, const math::Vector3<T>& up) :
-        position(pos), worldUp(up.normalize()), front(0.0f, 0.0f, -1.0f), yaw(-90.0f), pitch(0.0f), movementSpeed(5.0f), mouseSensitivity(0.05f) {
+        position(pos), worldUp(up.normalize()), front(0.0f, 0.0f, -1.0f), yaw(-90.0f), pitch(0.0f), movementSpeed(5.0f), rotationSpeed(30.0f), mouseSensitivity(0.05f) {
         updateVectors();
     }
     
@@ -15,6 +15,7 @@ namespace graphics {
     template<typename T>
     void Camera<T>::handleKeyboard(const Uint8* state, T deltaTime) {
         T velocity = movementSpeed * deltaTime;
+        T rotationVelocity = rotationSpeed * deltaTime;
         if (state[SDL_SCANCODE_W]) {
             position = position + front * velocity;
         }
@@ -32,6 +33,35 @@ namespace graphics {
         }
         if (state[SDL_SCANCODE_E]) {
             position = position + worldUp * velocity;
+        }
+        
+        bool rotationChanged = false;
+
+        if (state[SDL_SCANCODE_Z]) {
+            yaw -= rotationVelocity;
+            rotationChanged = true;
+        }
+        if (state[SDL_SCANCODE_C]) {
+            yaw += rotationVelocity;
+            rotationChanged = true;
+        }
+        if (state[SDL_SCANCODE_X]) {
+            pitch -= rotationVelocity;
+            rotationChanged = true;
+        }
+        if (state[SDL_SCANCODE_V]) {
+            pitch += rotationVelocity;
+            rotationChanged = true;
+        }
+
+        if (rotationChanged) {
+            if (pitch > static_cast<T>(89.0)) {
+                pitch = static_cast<T>(89.0);
+            }
+            if (pitch < static_cast<T>(-89.0)) {
+                pitch = static_cast<T>(-89.0);
+            }
+            updateVectors();
         }
     }
 
