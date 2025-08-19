@@ -168,7 +168,8 @@ namespace graphics {
     template<typename T>
     void Renderer<T>::drawMesh(const graphics::Mesh<T>& mesh, const math::Matrix4<T>& modelMatrix, const math::Matrix4<T>& viewMatrix, const math::Matrix4<T>& projectionMatrix, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
         math::Matrix4<T> mvpMatrix = projectionMatrix * viewMatrix * modelMatrix;
-        
+        std::vector<SDL_Point> points;
+        points.reserve(mesh.faces.size() * 6);
         SDL_SetRenderDrawColor(renderer, r, g, b, a);
 
         for (const auto& face : mesh.faces) {
@@ -202,8 +203,12 @@ namespace graphics {
                         static_cast<int>(sp1.x), static_cast<int>(sp1.y),
                         static_cast<int>(sp2.x), static_cast<int>(sp2.y));
                 }
+                
+                points.push_back({static_cast<int>(sp1.x), static_cast<int>(sp1.y)});
+                points.push_back({static_cast<int>(sp2.x), static_cast<int>(sp2.y)});
             }
         }
+    SDL_RenderDrawLines(renderer, points.data(), points.size());
     }
 
     template<typename T>
