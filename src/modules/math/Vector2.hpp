@@ -1,4 +1,3 @@
-// Vector2.hpp
 #pragma once
 #include <cmath>
 #include <stdexcept>

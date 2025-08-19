@@ -8,13 +8,6 @@
 #include "../math/Matrix4.hpp" 
 
 namespace app {
-    template<typename T>
-    using Quaternionf = math::Quaternion<T>;
-    template<typename T>
-    using Vector3f = math::Vector3<T>;
-    template<typename T>
-    using Matrix4f = math::Matrix4<T>;
-
     class Application {
     public:
         Application();
@@ -23,6 +16,7 @@ namespace app {
 
     private:
         void handleEvents();
+        void handleKeyboard(const Uint8* state, float deltaTime);
         void update(float deltaTime);
         void render();
 

@@ -1,4 +1,3 @@
-// Vector3.hpp
 #pragma once
 #include <cmath>
 

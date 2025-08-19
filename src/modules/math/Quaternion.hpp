@@ -1,4 +1,3 @@
-// Quaternion.hpp
 #pragma once
 #include <cmath>
 #include <stdexcept>

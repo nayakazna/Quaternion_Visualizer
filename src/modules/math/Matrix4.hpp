@@ -296,17 +296,17 @@ namespace math {
 
     static Matrix4 translation(const Vector3<T>& v) {
         Matrix4 result = identity();
-        result.data[3] = v.x;
-        result.data[7] = v.y;
-        result.data[11] = v.z;
+        result(0, 3)= v.x;
+        result(1, 3)= v.y;
+        result(2, 3)= v.z;
         return result;
     }
 
     static Matrix4 scale(const Vector3<T>& s) {
         Matrix4 result = identity();
-        result.data[0] = s.x;
-        result.data[5] = s.y;
-        result.data[10] = s.z;
+        result(0, 0) = s.x;
+        result(1, 1) = s.y;
+        result(2, 2) = s.z;
         return result;
     }
 
@@ -367,17 +367,20 @@ namespace math {
     }
 
     static Matrix4 perspective(T fovY, T aspect, T nearZ, T farZ) {
-        Matrix4 result;
+        Matrix4 result{};
         T tanHalfFovY = std::tan(fovY / static_cast<T>(2));
-        result(0, 0) = static_cast<T>(1) / (aspect * tanHalfFovY);
-        result(1, 1) = static_cast<T>(1) / tanHalfFovY;
-        result(2, 2) = -(farZ + nearZ) / (farZ - nearZ);
-        result(2, 3) = -(static_cast<T>(2) * farZ * nearZ) / (farZ - nearZ);
+        T f = static_cast<T>(1) / tanHalfFovY;
+
+        result(0, 0) = f / aspect;
+        result(1, 1) = f;
+        result(2, 2) = (farZ + nearZ) / (nearZ - farZ);
+        result(2, 3) = (static_cast<T>(2) * farZ * nearZ) / (nearZ - farZ);
         result(3, 2) = static_cast<T>(-1);
         result(3, 3) = static_cast<T>(0);
+
         return result;
     }
-
+    
     private:
         ArrayType data;
     };

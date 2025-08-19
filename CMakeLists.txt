@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+
 include_directories(
     src
     src/modules/core
@@ -37,5 +40,11 @@ target_include_directories(quaternion_visualizer
     ${SDL2_TTF_INCLUDE_DIRS}
 )
 
-file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/models")
+
+if(EXISTS "${CMAKE_SOURCE_DIR}/models")
+    file(COPY "${CMAKE_SOURCE_DIR}/models/" DESTINATION "${CMAKE_BINARY_DIR}/models/")
+endif()
+
+# file(GLOB_RECURSE SOURCES "src/*.cpp")
 

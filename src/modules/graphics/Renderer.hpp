@@ -19,7 +19,7 @@ namespace graphics {
         void drawAxes(const math::Matrix4<T>& viewProjectionMatrix);
         
     private:
-
+        bool isValidScreenPoint(const math::Vector3<T>& screenPoint) const;
         SDL_Renderer* renderer;
         int screenWidth;
         int screenHeight;

@@ -1,8 +1,8 @@
-// Matrix3.hpp
 #pragma once
 #include <array>
 #include <cmath>
 #include <stdexcept>
+#include "Vector3.hpp"
 
 namespace math {
     template<typename T>

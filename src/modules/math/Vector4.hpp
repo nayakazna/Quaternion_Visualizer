@@ -1,4 +1,3 @@
-// Vector4.hpp
 #pragma once
 #include <array>
 #include <stdexcept>
